@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Test Automation Practice Page - QA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/2.3.0/alpine.js" integrity="sha512-nIwdJlD5/vHj23CbO2iHCXtsqzdTTx3e3uAmpTm4x2Y8xCIFyWu4cSIV8GaGe2UNVq86/1h9EgUZy7tn243qdA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        space: {
+                            100: '#E6E8FF',
+                            200: '#C3C8FF',
+                            300: '#A0A8FF',
+                            400: '#7D88FF',
+                            500: '#5A68FF',
+                            600: '#3748FF',
+                            700: '#1428FF',
+                            800: '#0011E6',
+                            900: '#000D99',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="max-w-4xl mx-auto p-8">
+        <!-- Refresh button -->
+        <div class="mb-6 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-space-700">Space Exploration Dashboard - QA</h1>
+            <button id="refresh-btn" onclick="location.reload();" class="bg-space-500 text-white px-4 py-2 rounded-md hover:bg-space-600 transition duration-300">Recalibrate Systems (Refresh) </button>
+        </div>
+
+        <!-- Add new Planet -->
+        <div x-data="{ showPopup: false, inputValue: '' }" class="mb-8 p-6 bg-white rounded-lg shadow-md">
+            <h3 class="font-semibold mb-2 text-lg text-space-700">Add New Planet</h3>
+            <input x-model="inputValue" type="text" id="planet-input" class="w-full px-3 py-2 bg-gray-100 border border-space-300 rounded-md focus:outline-none focus:ring-2 focus:ring-space-400 mb-2 text-gray-800" placeholder="Enter planet name">
+            <button @click="showPopup = true" id="planet-submit" class="bg-space-500 text-white px-4 py-2 rounded-md hover:bg-space-600 transition duration-300">Add Planet</button>
+            <div x-show="showPopup" id="planet-popup" class="mt-2 p-2 bg-space-100 rounded-md text-space-800">
+                New planet added: <span x-text="inputValue" class="font-semibold"></span>
+            </div>
+        </div>
+
+        <!-- Choose a Spaceship Size -->
+        <div x-data="{ selected: '' }" class="mb-8 p-6 bg-white rounded-lg shadow-md">
+            <h3 class="font-semibold mb-2 text-lg text-space-700">Choose a Spaceship Size</h3>
+            <div class="space-y-2">
+                <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="radio" x-model="selected" name="spaceship-size" id="size-small" value="Small" class="form-radio text-space-500">
+                    <span>Small (Scout)</span>
+                </label>
+                <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="radio" x-model="selected" name="spaceship-size" id="size-medium" value="Medium" class="form-radio text-space-500">
+                    <span>Medium (Explorer)</span>
+                </label>
+                <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="radio" x-model="selected" name="spaceship-size" id="size-large" value="Large" class="form-radio text-space-500">
+                    <span>Large (Colony Ship)</span>
+                </label>
+            </div>
+            <div class="mt-2">Selected size: <span x-text="selected" id="size-result" class="font-semibold"></span></div>
+        </div>
+
+        <!-- Select a Destination Planet -->
+        <div x-data="{ selected: '' }" class="mb-8 p-6 bg-white rounded-lg shadow-md">
+            <h3 class="font-semibold mb-2 text-lg text-space-700">Select a Destination Planet</h3>
+            <select x-model="selected" id="planet-select" class="w-full px-3 py-2 bg-gray-100 border border-space-300 rounded-md focus:outline-none focus:ring-2 focus:ring-space-400 text-gray-800">
+                <option value="">Select a planet</option>
+                <option value="Mars">Mars</option>
+                <option value="Jupiter">Jupiter</option>
+                <option value="Saturn">Saturn</option>
+            </select>
+            <div class="mt-2">Selected destination: <span x-text="selected" id="planet-result" class="font-semibold"></span></div>
+        </div>
+
+        <!-- To Visit Planets List -->
+        <div x-data="{ draggedItem: null }" class="mb-8 p-6 bg-white rounded-lg shadow-md">
+            <h3 class="font-semibold mb-2 text-lg text-space-700">To Visit Planets List</h3>
+            <div class="flex space-x-4">
+                <div id="planet-options" class="w-1/2 bg-gray-100 p-2 rounded-md">
+                    <h4 class="font-semibold mb-2">Available Planets</h4>
+                    <div id="planet-mars" draggable="true" @dragstart="draggedItem = $event.target.id" class="bg-space-200 p-2 mb-2 rounded cursor-move text-space-800">Mars</div>
+                    <div id="planet-jupiter" draggable="true" @dragstart="draggedItem = $event.target.id" class="bg-space-200 p-2 mb-2 rounded cursor-move text-space-800">Jupiter</div>
+                    <div id="planet-saturn" draggable="true" @dragstart="draggedItem = $event.target.id" class="bg-space-200 p-2 mb-2 rounded cursor-move text-space-800">Saturn</div>
+                </div>
+                <div id="visit-list" class="w-1/2 bg-gray-100 p-2 rounded-md" @dragover.prevent @drop.prevent="$event.target.appendChild(document.getElementById(draggedItem))">
+                    <h4 class="font-semibold mb-2">Your Visit List</h4>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fuel Alert -->
+        <div x-data="{
+            showSuccess: false,
+            showWarning: false,
+            showError: false,
+            showButtons: false
+        }"
+        x-init="setTimeout(() => showButtons = true, 3000)"
+        class="mb-8 p-6 bg-white rounded-lg shadow-md">
+            <h3 class="font-semibold mb-2 text-lg text-space-700">Fuel Status Alerts</h3>
+            <div x-show="showButtons" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-90" x-transition:enter-end="opacity-100 transform scale-100" class="space-y-2">
+                <button @click="showSuccess = true; setTimeout(() => showSuccess = false, 3000)" id="alert-full" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-300">Full Tank</button>
+                <button @click="showWarning = true; setTimeout(() => showWarning = false, 3000)" id="alert-half" class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition duration-300">Half Tank</button>
+                <button @click="showError = true; setTimeout(() => showError = false, 3000)" id="alert-low" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300">Low Fuel</button>
+            </div>
+            <div x-show="showSuccess" id="full-alert" class="mt-2 p-2 bg-green-100 text-green-800 rounded-md">
+                Fuel tanks are full. Ready for long-distance travel!
+            </div>
+            <div x-show="showWarning" id="half-alert" class="mt-2 p-2 bg-yellow-100 text-yellow-800 rounded-md">
+                Fuel at 50%. Consider refueling at the next space station.
+            </div>
+            <div x-show="showError" id="low-alert" class="mt-2 p-2 bg-red-100 text-red-800 rounded-md">
+                Warning: Fuel levels critically low. Immediate refueling required.
+            </div>
+        </div>
+
+        <!-- Engine Preference -->
+        <div x-data="{ warp: false }" class="mb-8 p-6 bg-white rounded-lg shadow-md">
+            <h3 class="font-semibold mb-2 text-lg text-space-700">Engine Preference</h3>
+            <div class="flex items-center">
+                <span class="mr-3">Solar Sail</span>
+                <div class="relative cursor-pointer" @click="warp = !warp" data-testid="engine-toggle">
+                    <div class="block bg-space-300 w-20 h-10 rounded-full"></div>
+                    <div class="dot absolute left-1 top-1 bg-white w-8 h-8 rounded-full transition" :class="{ 'transform translate-x-10': warp }"></div>
+                </div>
+                <span class="ml-3">Warp Drive</span>
+            </div>
+            <div class="mt-2">Preference: <span x-text="warp ? 'Warp Drive' : 'Solar Sail'" id="engine-preference" class="font-semibold"></span></div>
+        </div>
+
+         <!-- System Checks -->
+        <div x-data="{
+            systems: {
+                lifeSupportSystem: false,
+                navigationSystem: false,
+                communicationSystem: false,
+                propulsionSystem: false
+            },
+            get allChecked() {
+                return Object.values(this.systems).every(val => val === true);
+            }
+        }" class="mb-8 p-6 bg-white rounded-lg shadow-md">
+            <h3 class="font-semibold mb-2 text-lg text-space-700">Spacecraft Systems Check</h3>
+            <div class="space-y-2">
+                <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="checkbox" x-model="systems.lifeSupportSystem" id="life-support-check" class="form-checkbox text-space-500">
+                    <span>Life Support System</span>
+                </label>
+                <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="checkbox" x-model="systems.navigationSystem" id="navigation-check" class="form-checkbox text-space-500">
+                    <span>Navigation System</span>
+                </label>
+                <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="checkbox" x-model="systems.communicationSystem" id="communication-check" class="form-checkbox text-space-500">
+                    <span>Communication System</span>
+                </label>
+                <label class="flex items-center space-x-2 cursor-pointer">
+                    <input type="checkbox" x-model="systems.propulsionSystem" id="propulsion-check" class="form-checkbox text-space-500">
+                    <span>Propulsion System</span>
+                </label>
+            </div>
+            <div class="mt-4">
+                <div x-show="allChecked" id="all-systems-go" class="p-2 bg-green-100 text-green-800 rounded-md">
+                    All systems are go! Ready for launch.
+                </div>
+                <div x-show="!allChecked" id="systems-pending" class="p-2 bg-yellow-100 text-yellow-800 rounded-md">
+                    System check incomplete. Please verify all systems before launch.
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</body>
+</html>
